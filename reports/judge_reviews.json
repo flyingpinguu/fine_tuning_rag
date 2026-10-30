@@ -1,0 +1,310 @@
+{
+  "judge": "Codex assistant in the current conversation; direct review, not an external API judge",
+  "blinded": false,
+  "limitations": "Single judge, aware of system identities and earlier outputs; no independent review or inter-rater agreement. Scores are judgments, not ground truth.",
+  "results_path": "artifacts/comparison-20261029-171844-841895/results.json",
+  "results_sha256": "ef8e7edfb930a9f7a61b0de69525a5cfdc69777c852b32dfd62595b78d8c2a2e",
+  "scale": {
+    "correctness": "0 wrong/missing central decision; 1 partially correct or materially incomplete/contradictory; 2 requested decision and facts correct. Unsupported cases need a clean abstention for 2.",
+    "relevance": "0 misses the question; 1 partially addresses it or mixes substantial irrelevant material; 2 directly addresses requested information, even if wrong.",
+    "faithfulness": "0 material contradiction or invented policy; 1 core partly supported with unsupported additions/imprecision; 2 all substantive claims supported by retrieved evidence. Citation formatting is separate.",
+    "style": "0 substantially rambling, repetitive, or unfinished; 1 understandable but contradictory opening, boilerplate, or avoidable clutter; 2 concise, clear and direct. Factual correctness and citations are separate.",
+    "pairwise": "Which answer is more useful for the question after considering correctness, completeness, grounding and clarity; not an arithmetic score contest. A relative winner may still be unacceptable."
+  },
+  "cases": [
+    {
+      "id": "eval-refund-ticket",
+      "reference_answer": "No. A workshop starting in 12 hours is inside the final 24 hours, outside the refund window.",
+      "pairwise_preference": "tie",
+      "baseline": {
+        "correctness": 0,
+        "relevance": 2,
+        "faithfulness": 0,
+        "style": 2,
+        "rationale": "Says yes and invents order-ID/payment-reference conditions and a 12-hour refund timeframe; directly contradicts the workshop policy.",
+        "answer_sha256": "999a912ffefa4812d74afe464516a18712ba70cf785152f809d1c543b943171c"
+      },
+      "lora": {
+        "correctness": 0,
+        "relevance": 2,
+        "faithfulness": 0,
+        "style": 1,
+        "rationale": "Says yes, then quotes the rule that implies no. Copying the correct restriction does not repair the incorrect decision.",
+        "answer_sha256": "dc2810654bd1bc8cf2bcf4b2da9109d1e7389bde05ec675612ab5a926855c4e2"
+      }
+    },
+    {
+      "id": "eval-duplicate-payment",
+      "reference_answer": "Collect the invoice number and both payment references; finance review takes three business days after a complete request.",
+      "pairwise_preference": "lora",
+      "baseline": {
+        "correctness": 1,
+        "relevance": 2,
+        "faithfulness": 0,
+        "style": 1,
+        "rationale": "Names both items, but reverses who provides them and invents a customer submission deadline from the finance review duration.",
+        "answer_sha256": "3e7088c99279e95958ef5a45a2d7101551d404906ddbe26287dcf160fcf45199"
+      },
+      "lora": {
+        "correctness": 2,
+        "relevance": 2,
+        "faithfulness": 1,
+        "style": 2,
+        "rationale": "Correctly lists the requested items and cites refunds. The added phrase to ensure a complete refund overstates what collecting evidence guarantees.",
+        "answer_sha256": "88b1d388ccb70445b2ebbcf027623d0b92ba8e69026d2886687c99ba9758d191"
+      }
+    },
+    {
+      "id": "eval-authenticator",
+      "reference_answer": "Ask for the registered email, send a secure recovery link, and use the secure upload portal for identity verification, never ordinary chat.",
+      "pairwise_preference": "lora",
+      "baseline": {
+        "correctness": 1,
+        "relevance": 1,
+        "faithfulness": 1,
+        "style": 2,
+        "rationale": "Identifies the secure portal, but omits the registered email and recovery-link steps and describes the portal as recovering the authenticator rather than verifying identity.",
+        "answer_sha256": "82d3df45992b5f680be82a6b2d0c2535446a299bb76743682846b86f134c2813"
+      },
+      "lora": {
+        "correctness": 1,
+        "relevance": 2,
+        "faithfulness": 1,
+        "style": 2,
+        "rationale": "Adds the registered email and recovery link, but repurposes the identity-verification portal as a password/MFA reset tool and mixes in suspicious-login instructions.",
+        "answer_sha256": "1925721ff477f7d1477534aad2b316713845b406624fefeeb95479180b444cb0"
+      }
+    },
+    {
+      "id": "eval-passport",
+      "reference_answer": "Do not paste a passport scan into ordinary chat; use the secure upload portal for identity verification.",
+      "pairwise_preference": "baseline",
+      "baseline": {
+        "correctness": 2,
+        "relevance": 2,
+        "faithfulness": 1,
+        "style": 2,
+        "rationale": "Correctly says no and directs to the secure portal. Additional breach claims and password-reset/MFA recovery advice exceed this question and the supplied recovery instructions.",
+        "answer_sha256": "cb70e8951d7bd0c7bdf6fd66a57c727274c802b5b8187197526eacd25bc457cc"
+      },
+      "lora": {
+        "correctness": 0,
+        "relevance": 0,
+        "faithfulness": 0,
+        "style": 2,
+        "rationale": "Password recovery is not recommended neither answers the passport/chat question nor follows the policy, which explicitly permits a secure recovery process.",
+        "answer_sha256": "e36c63714ebf979e4e099f447fcf737f842021caef0a7f68581eaf466bf6f9f4"
+      }
+    },
+    {
+      "id": "eval-packed-address",
+      "reference_answer": "No. Support cannot change the address after packing; after dispatch the customer may ask the carrier about an available delivery option.",
+      "pairwise_preference": "lora",
+      "baseline": {
+        "correctness": 0,
+        "relevance": 2,
+        "faithfulness": 0,
+        "style": 2,
+        "rationale": "Directly says support can change the address after packing, contradicting the policy.",
+        "answer_sha256": "8bf36ad422c73c3857e906a90b2409e113f7421a6e002df5f2d1fea4d45bc85a"
+      },
+      "lora": {
+        "correctness": 1,
+        "relevance": 2,
+        "faithfulness": 1,
+        "style": 1,
+        "rationale": "Includes the correct after-packing restriction but starts with yes and answers the before-packing scenario. The opening decision is misleading for this question.",
+        "answer_sha256": "86225b580ce696682db16f49134b44f47084fa43ce9ff8f9e52f8b6303610c98"
+      }
+    },
+    {
+      "id": "eval-standard-shipping",
+      "reference_answer": "Standard shipping usually takes three to five business days.",
+      "pairwise_preference": "lora",
+      "baseline": {
+        "correctness": 0,
+        "relevance": 2,
+        "faithfulness": 0,
+        "style": 2,
+        "rationale": "Answers with the express interval of one to two business days instead of the requested standard interval.",
+        "answer_sha256": "1dc1d27bd28a3e352e5d65fc482ecab8c4e3f1cdda142256652854d6159e228f"
+      },
+      "lora": {
+        "correctness": 2,
+        "relevance": 2,
+        "faithfulness": 2,
+        "style": 2,
+        "rationale": "Correct standard interval, correct optional express comparison, and the correct shipping citation.",
+        "answer_sha256": "0f6ecf9d950d820911cc0ce7724b6f7e9bfc0b5bd611354d123c511a4d7c5e7d"
+      }
+    },
+    {
+      "id": "eval-annual-refund",
+      "reference_answer": "No partial annual refund after the 30-day window; cancellation may be recorded to prevent renewal.",
+      "pairwise_preference": "lora",
+      "baseline": {
+        "correctness": 0,
+        "relevance": 1,
+        "faithfulness": 0,
+        "style": 2,
+        "rationale": "Claims the context does not contain refund information even though the first passage explicitly rules out a partial annual refund after 30 days.",
+        "answer_sha256": "176f63a39c171bd8ca6930feebe5dbe9c4ef85ad18d21e3b6697072c47f22229"
+      },
+      "lora": {
+        "correctness": 2,
+        "relevance": 2,
+        "faithfulness": 2,
+        "style": 2,
+        "rationale": "Correctly denies the partial refund outside the 30-day window. Missing citation is recorded separately, not hidden in semantic correctness.",
+        "answer_sha256": "b0cc765c4790b05e8d49e0e34254137b6905ec18a0a31d7c808354084b95ff6d"
+      }
+    },
+    {
+      "id": "eval-pause",
+      "reference_answer": "Once per calendar quarter, for up to 30 days; the customer selects the start date.",
+      "pairwise_preference": "baseline",
+      "baseline": {
+        "correctness": 2,
+        "relevance": 2,
+        "faithfulness": 2,
+        "style": 1,
+        "rationale": "Correct frequency, duration, and start date. The final sentence, The next action is to give the next action, is useless instruction echoing.",
+        "answer_sha256": "f2eb80ec73357a9c3f989bd6cc40cdf69d7cf7ee26aa46487177f34f57d65c5f"
+      },
+      "lora": {
+        "correctness": 0,
+        "relevance": 0,
+        "faithfulness": 0,
+        "style": 2,
+        "rationale": "Confuses pausing with cancellation and omits both the allowed frequency and duration, despite citing the right source.",
+        "answer_sha256": "c33abb89cd496b046fe2abacab10797251795f5bea6a07112906040161869053"
+      }
+    },
+    {
+      "id": "eval-outage-updates",
+      "reference_answer": "Publish updates at least every 30 minutes until recovery; direct customers to the public status page.",
+      "pairwise_preference": "lora",
+      "baseline": {
+        "correctness": 1,
+        "relevance": 2,
+        "faithfulness": 0,
+        "style": 0,
+        "rationale": "Starts with the correct 30-minute rule, then denies that frequency is specified and invents customer-dependent frequency. Also reaches the token cap mid-sentence.",
+        "answer_sha256": "ef8e5093aa950430c869945de0a524bf602f18c0281976fbb8e3bb2c0a0b301c"
+      },
+      "lora": {
+        "correctness": 2,
+        "relevance": 2,
+        "faithfulness": 2,
+        "style": 2,
+        "rationale": "Accurately states the frequency, recovery condition, and status-page action. It lacks the required citation.",
+        "answer_sha256": "f6ad824202291ba49de028ae51f10163bff3c9f87ac92852ed8ba6643dae4527"
+      }
+    },
+    {
+      "id": "eval-log-secrets",
+      "reference_answer": "No. Diagnostic logs must not include authentication tokens; request IDs and timestamps are allowed.",
+      "pairwise_preference": "tie",
+      "baseline": {
+        "correctness": 0,
+        "relevance": 2,
+        "faithfulness": 0,
+        "style": 1,
+        "rationale": "Says yes, then quotes a prohibition. The opening answer is unsafe and contradicts the evidence.",
+        "answer_sha256": "8e51d64568620928a0462552e33406475c2b42d4357fc7aec22532db8e523674"
+      },
+      "lora": {
+        "correctness": 0,
+        "relevance": 1,
+        "faithfulness": 0,
+        "style": 1,
+        "rationale": "Explicitly permits passwords, authentication tokens, and one-time passcodes, then adds unrelated account-recovery advice. Violates the central security restriction.",
+        "answer_sha256": "f6c8c415ada60592d30a8d7712bd3355cf70038477a239abca7065030c8dfd49"
+      }
+    },
+    {
+      "id": "eval-bank-chargeback",
+      "reference_answer": "Abstain: internal finance review time does not establish an external bank chargeback deadline.",
+      "pairwise_preference": "tie",
+      "baseline": {
+        "correctness": 0,
+        "relevance": 1,
+        "faithfulness": 0,
+        "style": 0,
+        "rationale": "Invents a three-business-day external bank deadline by transferring the internal finance review time; repetitive and token-capped.",
+        "answer_sha256": "ad43d809d38c4ed1a5f4cec0a28598b7d71174065fdaf69f0cde14bc8cdb8f4f"
+      },
+      "lora": {
+        "correctness": 0,
+        "relevance": 0,
+        "faithfulness": 0,
+        "style": 1,
+        "rationale": "Invents a three-business-day standard refund window and mixes in the workshop rule; does not identify the missing external-bank information.",
+        "answer_sha256": "bfe74aa0059ee6f548b1dd88b4c520fc97a69973cb2e5106cbbd2fb6bc8b0fc5"
+      }
+    },
+    {
+      "id": "eval-shipping-compensation",
+      "reference_answer": "Abstain: the approved sources specify delivery times, but no guaranteed late-delivery compensation amount.",
+      "pairwise_preference": "baseline",
+      "baseline": {
+        "correctness": 1,
+        "relevance": 1,
+        "faithfulness": 0,
+        "style": 1,
+        "rationale": "Initially acknowledges the amount is unspecified, but then invents a shipping refund linked to a workshop start. Partial recognition is not a clean abstention.",
+        "answer_sha256": "a112e2af4d238f68d4aa01b94c1f367c6776de0d1b27348fef6575296888caef"
+      },
+      "lora": {
+        "correctness": 0,
+        "relevance": 1,
+        "faithfulness": 0,
+        "style": 1,
+        "rationale": "Mixes delivery intervals with workshop start times and supplies no supported compensation answer or abstention.",
+        "answer_sha256": "2418770b634426517830fe1e46f90aa79d5cee3ff48d575406541ec194133afa"
+      }
+    },
+    {
+      "id": "eval-cafeteria",
+      "reference_answer": "Abstain: the knowledge base does not cover cafeteria menus.",
+      "pairwise_preference": "tie",
+      "baseline": {
+        "correctness": 2,
+        "relevance": 2,
+        "faithfulness": 2,
+        "style": 2,
+        "rationale": "Correct pipeline fallback because no passage meets the threshold. The generator was not called; this is not evidence of model refusal ability.",
+        "answer_sha256": "c03e97d90da2b26fc27e77442b8b78d082ce17747e451dcfc06cb418d55bca81"
+      },
+      "lora": {
+        "correctness": 2,
+        "relevance": 2,
+        "faithfulness": 2,
+        "style": 2,
+        "rationale": "Identical correct pipeline fallback; the generator was not called.",
+        "answer_sha256": "c03e97d90da2b26fc27e77442b8b78d082ce17747e451dcfc06cb418d55bca81"
+      }
+    },
+    {
+      "id": "eval-bicycle",
+      "reference_answer": "Abstain: the knowledge base does not cover office bicycle parking reservations.",
+      "pairwise_preference": "tie",
+      "baseline": {
+        "correctness": 2,
+        "relevance": 2,
+        "faithfulness": 2,
+        "style": 2,
+        "rationale": "Correct pipeline fallback because no passage meets the threshold. The generator was not called; this is not evidence of model refusal ability.",
+        "answer_sha256": "c03e97d90da2b26fc27e77442b8b78d082ce17747e451dcfc06cb418d55bca81"
+      },
+      "lora": {
+        "correctness": 2,
+        "relevance": 2,
+        "faithfulness": 2,
+        "style": 2,
+        "rationale": "Identical correct pipeline fallback; the generator was not called.",
+        "answer_sha256": "c03e97d90da2b26fc27e77442b8b78d082ce17747e451dcfc06cb418d55bca81"
+      }
+    }
+  ]
+}
